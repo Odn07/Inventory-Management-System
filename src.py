@@ -11,7 +11,7 @@ while True:
     if count == 1:
         mod1.Sales.sell_product()
         #delete temporary file after printing the current sales details
-        delete_file()
+        mod1.delete_file()
     elif count == 2:
         print("\n|MENU =>", "|Pcode", "|Stock", "|Sales")
         # menu

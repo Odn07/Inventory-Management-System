@@ -5,8 +5,10 @@ from xlsxwriter.workbook import Workbook
 
 # temp file to be deleted at the conclusion of every sale
 def temp_file():
-    return f"{'tempfile_name' + '.csv'}"
-
+    try:
+        return f"{'tempfile_name' + '.csv'}"
+    except BaseException:
+        pass
 
     
 
@@ -16,28 +18,35 @@ def delete_file():
     first check if file exists
     call remove method to delete the csv file
     '''
-    files = temp_file()
-    if(os.path.exists(files) and os.path.isfile(files)):
-        os.remove(files) 
-
+    try:
+        files = temp_file()
+        if(os.path.exists(files) and os.path.isfile(files)):
+            os.remove(files) 
+    except BaseException:
+        pass
 
 #Function to calculate quantity of product
 def get_quantity():
-    number_of_product = []
-    quantity =0
-    quantity += 1
-    number_of_product.append(quantity)
-    qty = int(number_of_product[-1])
-    return qty
+    try:
+        number_of_product = []
+        quantity =0
+        quantity += 1
+        number_of_product.append(quantity)
+        qty = int(number_of_product[-1])
+        return qty
+    except BaseException:
+        pass
 
 def get_real_qty():
-    qty_list = []
-    with open("tempfile_name.csv") as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            qty_list.append(row["qty"])
-            return sum(int(list) for list in qty_list)
-
+    try:
+        qty_list = []
+        with open("tempfile_name.csv") as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                qty_list.append(row["qty"])
+                return sum(int(list) for list in qty_list)
+    except BaseException:
+        pass
 
 
 
@@ -111,24 +120,30 @@ class Stock:
         self.SP = SP  
     
     @classmethod    
-    def csv_to_excel(cls):        
-        for csvfile in glob.glob(os.path.join(".", "*Stock.csv")):
-            workbook = Workbook(csvfile[:-4] + '.xlsx')
-            worksheet = workbook.add_worksheet()
-            with open(csvfile, 'rt', encoding='utf8') as f:
-                reader = csv.reader(f)
-                for r, row in enumerate(reader):
-                    for c, col in enumerate(row):
-                        worksheet.write(r, c, col)
-            workbook.close()    
+    def csv_to_excel(cls):  
+        try:
+            for csvfile in glob.glob(os.path.join(".", "*Stock.csv")):
+                workbook = Workbook(csvfile[:-4] + '.xlsx')
+                worksheet = workbook.add_worksheet()
+                with open(csvfile, 'rt', encoding='utf8') as f:
+                    reader = csv.reader(f)
+                    for r, row in enumerate(reader):
+                        for c, col in enumerate(row):
+                            worksheet.write(r, c, col)
+                workbook.close()    
+        except BaseException:
+            pass
 
     #create sales record file name every first day of the month yyyy-mm-1S.csv
     @classmethod
     def dateFileNameStock(cls):
-        current_date = date.today()
-        first_day_of_month = date(current_date.year, current_date.month, 1)
-        return f"{str(first_day_of_month) + 'Stock.csv'}"
-    
+        try:
+            current_date = date.today()
+            first_day_of_month = date(current_date.year, current_date.month, 1)
+            return f"{str(first_day_of_month) + 'Stock.csv'}"
+        except BaseException:
+            pass
+
     @classmethod
     def getStockedProduct(cls):
         while True:
@@ -138,22 +153,21 @@ class Stock:
                     break
             except BaseException:
                 print("Check Product code!")   
-                       
-            for product in cls.stockList():
-                if PC == product["PC"] or PC == "":
-                    print(f"Product code {PC} is used!")
-                    break
-                    
-            else:                
-                try:
+            try:       
+                for product in cls.stockList():
+                    if PC == product["PC"] or PC == "":
+                        print(f"Product code {PC} is used!")
+                        break
+                        
+                else:                
                     print(f"Product code {PC} is free!")
                     PRD = input("Product name: ").title()
                     QTY = int(input("Quantity of product: "))
                     CP = int(input("Cost price(#Naira) per product: #"))
                     SP = int(input("Selling price(#Naira) per product: #"))              
                     return cls(PC, PRD, QTY, CP, SP)
-                except BaseException:
-                    pass 
+            except BaseException:
+                pass 
 
 
     @classmethod
@@ -179,8 +193,10 @@ class Stock:
    
     @classmethod
     def profit(cls, SP, CP, QTY):
-        return (SP * QTY) - (CP * QTY)
-    
+        try:
+            return (SP * QTY) - (CP * QTY)
+        except BaseException:
+            pass
 
     @classmethod
     def total_quantity_stocked(cls, PC):         
@@ -193,8 +209,10 @@ class Stock:
                         stocked_product.append(row["QTY"])               
         except BaseException as err:
             print(err)
-        return sum(int(list) for list in stocked_product)
-
+        try:
+            return sum(int(list) for list in stocked_product)
+        except BaseException:
+            pass
 
     #Returns a list of stock record
     @classmethod
@@ -214,13 +232,15 @@ class Stock:
 
     @classmethod
     def codeGenerator(cls):
-        n = int(input("No. of PC to generate: "))
-        random_list = []
-        for i in range(0, n):
-            random_list.append(random.randint(100, 1000000))
-        for n in random_list:
-            print(n)
-
+        try:
+            n = int(input("No. of PC to generate: "))
+            random_list = []
+            for i in range(0, n):
+                random_list.append(random.randint(100, 1000000))
+            for n in random_list:
+                print(n)
+        except BaseException:
+            pass
     
     
     
@@ -272,19 +292,21 @@ class Sales:
             except BaseException as err:
                 print(err)
             for fileName in fileNamesList2:
-                if PC == fileName["PC"]:
-                    quantity.append(fileName["QTY"])
+                    if PC == fileName["PC"]:
+                        quantity.append(fileName["QTY"])
             return sum(int(list) for list in quantity)
-
+            
 
     #create sales record file name every first day of the month
     #  yyyy-mm-dd.csv
     @classmethod
     def dateFileNameSales(cls):
-        current_date = date.today()
-        first_day_of_month = date(current_date.year, current_date.month, 1)        
-        return f"{str(first_day_of_month) + 'Sales.csv'}"
-
+        try:
+            current_date = date.today()
+            first_day_of_month = date(current_date.year, current_date.month, 1)        
+            return f"{str(first_day_of_month) + 'Sales.csv'}"
+        except BaseException:
+            pass
 
     @classmethod    
     def csv_to_excel(cls):  
@@ -327,7 +349,7 @@ class Sales:
         # display a summary of sales 
         # detail
         try:
-            cls.show_sales_summary()
+            cls.show_sales_summary(PC)
         except BaseException:
             pass
                                       
@@ -378,7 +400,7 @@ class Sales:
    
    
     @classmethod
-    def show_sales_summary(cls):
+    def show_sales_summary(cls, PC):
         counter = 0    
         price_product = []
         total_qty = []
@@ -392,7 +414,7 @@ class Sales:
                     total_qty.append(row["QTY"])
         except BaseException as err:
             pass
-        else:
+        try:
             print("\n|SALES SUMMARY:")
             for prod_name in product_name:
                 counter += 1                 
@@ -402,28 +424,30 @@ class Sales:
             print("|Total Qty: ", sum(int(list) for list in total_qty))
             print("|Total Amount: #", sum(float(list) for list in price_product), "\n", sep="")        
             #product balance in stock
-            cls.product_balance() 
-
+            cls.product_balance(PC) 
+        except BaseException:
+            pass
     
     
     @classmethod
-    def product_balance(cls):        
+    def product_balance(cls, PC):        
         try:
             with open(temp_file()) as file:
                 reader = csv.DictReader(file)
                 products = [row for row in reader] 
         except BaseException as err:
             print(err)
-        else:
+        try:
             print("|PRODUCT BALANCE IN STOCK:") 
             for prod in products:
                 PC = prod["PC"] 
                 prod_name = prod["PRD"]             
                 if Stock.total_quantity_stocked(PC) == cls.totalQuantitySold(PC):            
-                    print("|",prod_name, "Out of stock!")                    
+                    print(f"|{prod_name} Out of stock!")                    
                 else:  
                     print(f"|{prod_name}, {Stock.total_quantity_stocked(PC) - cls.totalQuantitySold(PC)} remaining in stock, {cls.totalQuantitySold(PC)} sold.")  
-     
+        except BaseException:
+            pass
     
     
     
@@ -436,12 +460,11 @@ class Sales:
             mm = input("Please type the month of profit/loss information needed (e.g. 09): ").strip()
         except BaseException as err:
             print(err)
-        else:
-            # year and month
-            year_and_month = yy + "-" + mm
-            # read and collect data from sales-record
-            #Sales file is created every first day of the month
-            return year_and_month + "-" + str(0) + str(1) + 'Sales.csv'
+        # year and month
+        year_and_month = yy + "-" + mm
+        # read and collect data from sales-record
+        #Sales file is created every first day of the month
+        return year_and_month + "-" + str(0) + str(1) + 'Sales.csv'
 
 
 
@@ -459,14 +482,15 @@ class Sales:
                     total_total_amount.append(row["SP"])
         except BaseException as err:
             print(err)
-        else:
+        try:
             #dispay sales summary
             print("\nSUMMARY OF SALES")
             print("|QUANTITY OF PRODUCT SOLD: ", end="")
             print(sum(int(list) for list in total_sales_quantity), end="\n")
             print("|TOTAL AMOUNT OF PRODUCT SOLD: #", end="")
             print(sum(float(list) for list in total_total_amount), end="\n")
-
+        except BaseException:
+            pass
 
    
 
@@ -475,7 +499,7 @@ class Sales:
 
 def main():
     count = 0
-Sales.totalQuantitySold("121212")
+print(Sales.totalQuantitySold("121212"))
 #Sales.sell_product()
 #Sales.createTempFile(121212)
 #Sales.createSalesFile(121212)
