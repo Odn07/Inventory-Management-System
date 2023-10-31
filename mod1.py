@@ -333,7 +333,7 @@ class Sales:
                 if not PC:
                     break                                      
             except BaseException as err:
-                print(err)
+                pass
             try:
                 for product in Stock.stockList():
                     if PC == product["PC"]:
