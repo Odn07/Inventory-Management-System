@@ -252,6 +252,10 @@ class Stock:
 
 #SALES CLASS
 class Sales:
+    
+
+
+    """
     @classmethod
     def totalQuantitySold(cls, PC):
         now = datetime.datetime.now()
@@ -295,7 +299,7 @@ class Sales:
                     if PC == fileName["PC"]:
                         quantity.append(fileName["QTY"])
             return sum(int(list) for list in quantity)
-            
+        """     
 
     #create sales record file name every first day of the month
     #  yyyy-mm-dd.csv
@@ -493,6 +497,84 @@ class Sales:
             pass
 
    
+    @classmethod
+    def totalQuantitySold(cls, PC):
+        try:
+            #Delete sumOfQuantitySold.csv if it exists
+            files = "sumOfQuantitySold.csv"
+            if(os.path.exists(files) and os.path.isfile(files)):
+                os.remove(files)
+            #Create a file where names of sales file are stored
+            cls.createSalesFileNameFile()
+            #Open the file where sales file names are stored,
+            # stored the sales file in a list
+            salesFileNameList = []
+            with open("salesFileName.csv") as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    if row not in salesFileNameList:
+                        salesFileNameList.append(row)
+            for sales in salesFileNameList:
+                salesFile = sales["filename"]
+
+                #Open each sales file go to the quantity column
+                #using batch number as a condition find the sum of quantity of
+                #product sold
+                sold_product = []
+                with open(salesFile) as file:
+                    reader = csv.DictReader(file)
+                    for row in reader:
+                        if PC == row["PC"]:
+                            sold_product.append(row["QTY"])                     
+                salesQuantity = sum(int(list) for list in sold_product)
+
+
+                #Create a file sumOfQuantitySold.csv and store quantity of
+                #product with a particular batch number
+                with open("sumOfQuantitySold.csv", "a", newline="") as file:
+                    fieldnames = ["PC", "quantitySold"]
+                    writer = csv.DictWriter(file, fieldnames = fieldnames)
+                    #If file does not exist create header.
+                    if file.tell() == 0:
+                        writer.writeheader()
+                    writer.writerow({"PC": PC, "quantitySold": salesQuantity})
+
+            #Open sumOfQuantitySold.csv and find the sum of
+            # quantity of products sold
+            sold_product = []
+            with open("sumOfQuantitySold.csv") as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    if row["quantitySold"] not in sold_product:
+                        sold_product.append(row["quantitySold"])
+        except BaseException as err:
+            print(err)
+        return sum(int(list) for list in sold_product)
+
+    
+
+
+
+    #Create a file where names of sales file are stored
+    @classmethod
+    def createSalesFileNameFile(cls):
+        with open("salesFileName.csv", "a", newline="") as file:
+            fieldnames = ["filename"]
+            writer = csv.DictWriter(file, fieldnames = fieldnames)
+            #If file does not exist create header.
+            if file.tell() == 0:
+                writer.writeheader()
+            writer.writerow({"filename": cls.dateFileNameSales()})
+
+
+    
+
+    @classmethod
+    def quantityStockSold(cls, PC):
+        if Stock.total_quantity_stocked(PC) > cls.total_quantity_sold(PC):
+            return True
+
+
 
     
                                                 
